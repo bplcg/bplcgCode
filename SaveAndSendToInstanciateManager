@@ -1,0 +1,26 @@
+using UnityEngine;
+
+[RequireComponent(typeof(Rigidbody))]
+public class Send : MonoBehaviour
+{  
+    
+    [HideInInspector] public int ID;
+    Rigidbody _rb;
+    InstanciateManager _instanciateManager;
+
+    public void Awake()
+    {
+        _instanciateManager = FindObjectOfType<InstanciateManager>();         
+        _rb = GetComponent<Rigidbody>();             
+    }
+
+    
+    void Update()
+    {      
+        //Save and send --
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            _instanciateManager.receive(gameObject, ID, _rb);
+        }
+    }
+}
