@@ -1,0 +1,127 @@
+using System.Collections.Generic;
+using UnityEngine;
+using System.IO;
+using UnityEngine.UI;
+using TMPro;
+
+public class InstanciateManager : MonoBehaviour
+
+{
+    [Header("▐▬▬▬▬▬▬▬▬▬▬▬▬▬▬▌Settings▐▬▬▬▬▬▬▬▬▬▬▬▬▬▬▌")]
+
+    [SerializeField] private GameObject ItemTip;                                       
+    [SerializeField] private Button bouton;                                         
+    [SerializeField] private Transform buttonParent;                                
+    [SerializeField] ClassWhithLists classWhithLists = new ClassWhithLists();       
+    
+    [Header("▐▬▬▬▬▬▬▬▬▬▬▬▬▌Instantiation list▐▬▬▬▬▬▬▬▬▬▬▬▬▌")]
+    
+    public List<GameObject> listOfGameObject;
+    
+    //----------------------------------------------------------------------------------------------------------------------------------------------
+    GameObject GoInstanciate;                           
+    Rigidbody rb;                                       
+    
+    //▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ 
+    
+    void Awake()
+    {        
+        Ibutton();   
+    }
+    //▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            LoadFromJson();
+            InstanciateFromListWithJson();
+        }
+         
+    }
+    //▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ 
+
+    public void InstanciateFromListWithJson()
+    {
+        for (int i = 0; i < classWhithLists.positionList.Count; i++)
+        {
+
+          int cwl = classWhithLists.IdIntList[i];         //ID
+          var go2 = listOfGameObject[cwl];                //LINK GO TO ID
+          var v = classWhithLists.positionList[i];        //POS
+          var q = classWhithLists.rotationList[i];        //ROT
+          var v2 = classWhithLists.scaleList[i];          //SCALE
+          var k = classWhithLists.boolListKinematic[i];   //KINE
+
+            GameObject newObject = Instantiate(go2, v, q);            
+            newObject.transform.localScale = v2;
+            newObject.GetComponent<Rigidbody>().isKinematic = k;         
+
+        }
+    }
+
+    //▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ 
+    //------------- SAVE to json-----------
+    public void receive(GameObject _GoInstanciate, int _myInt, Rigidbody _rb) 
+    {    
+        classWhithLists.positionList.Add(_GoInstanciate.transform.position);    //POS
+        classWhithLists.rotationList.Add(_GoInstanciate.transform.rotation);    //ROT
+        classWhithLists.scaleList.Add(_GoInstanciate.transform.localScale);     //SCALE
+        classWhithLists.IdIntList.Add(_myInt);                                  //ID
+        classWhithLists.boolListKinematic.Add(_rb.isKinematic);                 //kINEMATIC
+
+        saveToJson();      
+    }
+    //▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ 
+    public void saveToJson()
+    {
+        string classData = JsonUtility.ToJson(classWhithLists);
+        string filePath = Application.dataPath + "/save.json";
+        
+        File.WriteAllText(filePath, classData);
+        
+    }
+    //---------------------------------------------------------------------------------------------------------------------------------------------- 
+    public void LoadFromJson()
+    {
+        string filePath = Application.dataPath + "/save.json";  
+        string classData = File.ReadAllText(filePath);
+        classWhithLists = JsonUtility.FromJson<ClassWhithLists>(classData); 
+    }
+
+    //▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ -
+    [System.Serializable]
+    public class ClassWhithLists 
+    {
+        public List<int> IdIntList;
+        public List<Vector3> positionList;
+        public List<Quaternion> rotationList;
+        public List<Vector3> scaleList;
+        public List<bool> boolListKinematic;
+    }
+        
+    //▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ 
+    public void Ibutton()
+    {
+        foreach (GameObject obj in listOfGameObject)
+        {
+            if (obj.GetComponent<Send>() == null) 
+            {
+                obj.AddComponent<Send>();            
+            }            
+            
+            obj.GetComponent<Send>().ID = listOfGameObject.IndexOf(obj);          
+
+            bouton = Instantiate(bouton, buttonParent);
+            bouton.onClick.AddListener(() => InstancierObjet(obj));
+            bouton.GetComponentInChildren<TextMeshProUGUI>().text = obj.name;                   
+           
+        }
+
+    }
+    //▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ 
+    public void InstancierObjet(GameObject obj)
+    {        
+        Instantiate(obj, ItemTip.transform.position, ItemTip.transform.rotation);
+    }  
+    
+}
