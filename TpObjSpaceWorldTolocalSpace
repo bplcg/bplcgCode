@@ -1,0 +1,28 @@
+using UnityEngine;
+
+public class MonScript : MonoBehaviour
+{
+    [SerializeField] private Transform objInSpaceWorld;
+    [SerializeField] private Transform localSpace1;
+    [SerializeField] private Transform localSpace2;
+    private bool _actived = true;
+
+    //--- Recup and modify the world position of "objInSpaceWorld" and reallocates it between two local spaces. ---
+    
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            if (_actived)
+            {
+                objInSpaceWorld.position = localSpace2.transform.TransformPoint(localSpace1.InverseTransformPoint(objInSpaceWorld.position));
+            }
+            else
+            {
+                objInSpaceWorld.position = localSpace1.transform.TransformPoint(localSpace2.InverseTransformPoint(objInSpaceWorld.position));
+            }
+            _actived = !_actived;
+        }
+    }
+
+}
