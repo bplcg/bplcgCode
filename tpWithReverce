@@ -1,0 +1,22 @@
+using UnityEngine;
+
+public class tpWithReverce : MonoBehaviour
+{
+    public GameObject obj;
+   
+
+
+    private void OnTriggerEnter(Collider other)
+
+    {
+            other.transform.position = obj.transform.position;           
+
+// velocity Y reverse-----------------
+            var rb = other.GetComponent<Rigidbody>();
+            Vector3 rbv = rb.velocity;
+            rbv.y = - rbv.y ;
+            rb.velocity = rbv;         
+//----------------------------------
+    }
+
+}
